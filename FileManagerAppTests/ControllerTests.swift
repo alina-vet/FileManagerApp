@@ -6,30 +6,54 @@
 //
 
 import XCTest
+@testable import FileManagerApp
 
 class ControllerTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    var sut: MainViewController!
+    var collectionView: UICollectionView!
+    var controller: MainViewController!
+
+    override func setUp() {
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        controller = storyBoard.instantiateViewController(withIdentifier: String(describing: MainViewController.self)) as? MainViewController
+        sut = controller
+        controller.loadViewIfNeeded()
+        collectionView = controller.collectionView
+        
+        sut.files = [File]()
+        sut.parentFiles = [File]()
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    override func tearDown() {
+        sut = nil
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    func testWhenViewsIsLoadedCollectonViewNotNill() {
+        XCTAssertNotNil(sut.collectionView)
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    
+    func testWhenViewsIsLoadedCollectonViewDelegateIsSet() {
+        XCTAssertNotNil(sut.collectionView.delegate)
+    }
+    
+    func testWhenViewsIsLoadedCollectonViewDataSourseIsSet() {
+        XCTAssertNotNil(sut.collectionView.dataSource)
+    }
+    
+    func testWhenViewsIsLoadedCollectonViewCustomFlowLayoutIsSet() {
+        XCTAssertNotNil(sut.collectionViewFlowLayout)
+    }
+    
+    func testNumberOfRowsInSectionZeroIsFileCount() {
+        sut.files.append(File(id: UUID().uuidString, parentId: "3", type: "d", name: "Foo1"))
+        sut.files.append(File(id: UUID().uuidString, parentId: "3", type: "f", name: "Foo2"))
+        sut.files.append(File(id: UUID().uuidString, parentId: "", type: "d", name: "Boo"))
+        
+        sut.getCurrentData()
+        sut.collectionView.reloadData()
+        
+        XCTAssertEqual(sut.collectionView(collectionView, numberOfItemsInSection: sut.parentFiles.count), 1)
     }
 
 }

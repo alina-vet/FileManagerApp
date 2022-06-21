@@ -12,16 +12,15 @@ class MainViewController: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var arrangeBarButtonItem: UIBarButtonItem!
-    @IBOutlet weak var createNewDirectoryButton: UIBarButtonItem!
     
     var files = [File]()
     var parentFiles = [File]()
+    var isTapped = false
     var selectedDirectory = "" {
         didSet {
             self.navigationItem.backButtonTitle = selectedDirectory
         }
     }
-    var isTapped = false
         
     lazy var collectionViewFlowLayout : CustomCollectionViewFlowLayout = {
             let layout = CustomCollectionViewFlowLayout(display: .list)
@@ -31,14 +30,14 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.collectionView.register(UINib(nibName: GridCollectionViewCell.id, bundle: nil), forCellWithReuseIdentifier: GridCollectionViewCell.id)
-        self.collectionView.register(UINib(nibName: ListCollectionViewCell.id, bundle: nil), forCellWithReuseIdentifier: ListCollectionViewCell.id)
-        self.collectionView.collectionViewLayout = self.collectionViewFlowLayout
-        self.collectionView.delegate = self
-        self.collectionView.dataSource = self
-                
+        setCollectionView()
         loadFiles()
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+            guard let destination = segue.destination as? ChildViewController else { return }
+            destination.delegate = self
+        }
 
     @IBAction func changeLayoutValue(_ sender: Any) {
         isTapped = !isTapped
@@ -47,31 +46,40 @@ class MainViewController: UIViewController {
         self.collectionView.reloadData()
     }
     
-    @IBAction func createNewDirectoryAction(_ sender: Any) {
-        let ac = UIAlertController(title: "Create", message: nil, preferredStyle: .alert)
+    @IBAction func createNewFileAction(_ sender: Any) {
+        let ac = UIAlertController(title: "Create new file", message: nil, preferredStyle: .alert)
         ac.addTextField  { (textfield) in
             textfield.placeholder = "Enter new name here"
         }
-        ac.addAction(UIAlertAction(title: "new directory", style: .default, handler: { _ in
+        ac.addAction(UIAlertAction(title: "Save", style: .default, handler: { [self] _ in
             let textField = ac.textFields![0] as UITextField
-            guard textField.text != "" else{return}
-            var newEntry = File(id: UUID().uuidString, parentId: "", type: "d", name: textField.text!)
-            self.updateData(entry: newEntry)
-            self.collectionView.reloadData()
+            guard textField.text != "" else { return }
+            let newEntry = File(id: UUID().uuidString, parentId: "", type: "f", name: textField.text! + ".txt")
+            files.append(newEntry)
+            getCurrentData()
+            collectionView.reloadData()
         }))
         
         ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         self.present(ac, animated: true)
     }
     
-    func updateData(entry: File){
-        FetchAPI.sharedApi.putAPI  { files, error in
-            if files != nil {
-                self.files.append(entry)
-            } else if let error = error {
-                print(error.localizedDescription)
-            }
+    @IBAction func createNewDirectoryAction(_ sender: Any) {
+        let ac = UIAlertController(title: "Create new directory", message: nil, preferredStyle: .alert)
+        ac.addTextField  { (textfield) in
+            textfield.placeholder = "Enter new name here"
         }
+        ac.addAction(UIAlertAction(title: "Save", style: .default, handler: { [self] _ in
+            let textField = ac.textFields![0] as UITextField
+            guard textField.text != "" else { return }
+            let newEntry = File(id: UUID().uuidString, parentId: "", type: "d", name: textField.text!)
+            files.append(newEntry)
+            getCurrentData()
+            collectionView.reloadData()
+        }))
+        
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        self.present(ac, animated: true)
     }
     
     func loadFiles() {
@@ -83,6 +91,14 @@ class MainViewController: UIViewController {
                 print(error.localizedDescription)
             }
         }
+    }
+    
+    func setCollectionView() {
+        self.collectionView.register(UINib(nibName: GridCollectionViewCell.id, bundle: nil), forCellWithReuseIdentifier: GridCollectionViewCell.id)
+        self.collectionView.register(UINib(nibName: ListCollectionViewCell.id, bundle: nil), forCellWithReuseIdentifier: ListCollectionViewCell.id)
+        self.collectionView.collectionViewLayout = self.collectionViewFlowLayout
+        self.collectionView.delegate = self
+        self.collectionView.dataSource = self
     }
     
     func getCurrentData() {
@@ -105,11 +121,12 @@ extension MainViewController : UICollectionViewDelegate, UICollectionViewDataSou
                 
         let file = parentFiles[indexPath.item]
         
-        if self.collectionViewFlowLayout.display == .list {
+        switch collectionViewFlowLayout.display {
+        case .list:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ListCollectionViewCell.id, for: indexPath) as! ListCollectionViewCell
                 cell.file = file
             return cell
-            } else {
+        case .grid:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GridCollectionViewCell.id, for: indexPath) as! GridCollectionViewCell
                 cell.file = file
             return cell
@@ -121,11 +138,39 @@ extension MainViewController : UICollectionViewDelegate, UICollectionViewDataSou
         
         guard parentFiles[indexPath.item].type == "d" else { return }
         guard let vc = self.storyboard?.instantiateViewController(identifier: ChildViewController.id) as? ChildViewController else { return }
+        vc.files = files
+        vc.delegate = self
         vc.parentUUID = parentFiles[indexPath.item].id
         vc.collectionDisplay = self.collectionViewFlowLayout.display
         selectedDirectory = parentFiles[indexPath.item].name
         
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        let delete = UIAction(title: "Delete", image: UIImage(systemName: "trash"), identifier: nil, discoverabilityTitle: nil, state: .off) { [self] _ in
+            if files.contains(parentFiles[indexPath.item]) {
+                files.removeAll(where: {$0 == parentFiles[indexPath.item]})
+                getCurrentData()
+                self.collectionView.reloadData()
+                print(files.count)
+            }
+        }
+        
+        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            return UIMenu(title: "", children: [delete])
+        }
+        
+        return configuration
+        
+    }
+}
+
+extension MainViewController: UpdateDataProtocol {
+    func update(files: [File]) {
+        self.files = files
+        self.collectionView.reloadData()
     }
 }
 

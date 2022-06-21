@@ -37,14 +37,14 @@ class CustomCollectionViewFlowLayout: UICollectionViewFlowLayout {
             
             self.scrollDirection = .vertical
             if let collectionView = self.collectionView {
-                let optimisedWidth = (collectionView.frame.width - minimumInteritemSpacing - 20) / 3
-                self.itemSize = CGSize(width: optimisedWidth , height: optimisedWidth)
+                let optimisedWidth = (collectionView.frame.width - minimumInteritemSpacing) / 3
+                self.itemSize = CGSize(width: optimisedWidth - 20, height: optimisedWidth + 20)
             }
             
         case .list:
             self.scrollDirection = .vertical
             if let collectionView = self.collectionView {
-                self.itemSize = CGSize(width: collectionView.frame.width , height: 40)
+                self.itemSize = CGSize(width: collectionView.frame.width - 20, height: 40)
             }
         }
     }

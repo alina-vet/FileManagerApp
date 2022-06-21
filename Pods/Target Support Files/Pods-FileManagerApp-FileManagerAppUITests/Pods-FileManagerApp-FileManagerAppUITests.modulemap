@@ -1,0 +1,6 @@
+framework module Pods_FileManagerApp_FileManagerAppUITests {
+  umbrella header "Pods-FileManagerApp-FileManagerAppUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+protocol UpdateDataProtocol: class {
+    func update(files: [File])
+}

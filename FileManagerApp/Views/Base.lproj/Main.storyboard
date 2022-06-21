@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Main View Controller-->
+        <!--My files-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="MainViewController" customModule="FileManagerApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MainViewController" id="BYZ-38-t0r" customClass="MainViewController" customModule="FileManagerApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -48,15 +48,27 @@
                             <constraint firstAttribute="bottom" secondItem="53s-7F-gQm" secondAttribute="bottom" id="rCi-Yn-Y4b"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="S2r-Lh-pAR">
-                        <barButtonItem key="rightBarButtonItem" title="Item" image="list.dash" catalog="system" id="EQl-dw-7Eq">
-                            <connections>
-                                <action selector="layoutValueChanged:" destination="BYZ-38-t0r" id="ks5-g7-KS4"/>
-                            </connections>
-                        </barButtonItem>
+                    <navigationItem key="navigationItem" title="My files" id="S2r-Lh-pAR">
+                        <rightBarButtonItems>
+                            <barButtonItem title="Item" image="list.dash" catalog="system" id="EQl-dw-7Eq">
+                                <connections>
+                                    <action selector="changeLayoutValue:" destination="BYZ-38-t0r" id="rCr-zZ-HOd"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Item" image="folder.badge.plus" catalog="system" id="PhL-TS-aBb">
+                                <connections>
+                                    <action selector="createNewDirectoryAction:" destination="BYZ-38-t0r" id="JEx-Bb-fTm"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Item" image="doc.badge.plus" catalog="system" id="Vq4-Zm-UTl">
+                                <connections>
+                                    <action selector="createNewFileAction:" destination="BYZ-38-t0r" id="vm9-s1-d3U"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
-                        <outlet property="arrangeBarButtonItem" destination="EQl-dw-7Eq" id="Cmh-Le-Bda"/>
+                        <outlet property="arrangeBarButtonItem" destination="EQl-dw-7Eq" id="iUZ-Iw-a4x"/>
                         <outlet property="collectionView" destination="53s-7F-gQm" id="A0j-PZ-kfh"/>
                     </connections>
                 </viewController>
@@ -64,12 +76,64 @@
             </objects>
             <point key="canvasLocation" x="971.01449275362324" y="124.55357142857142"/>
         </scene>
+        <!--Child View Controller-->
+        <scene sceneID="RuI-Mw-asc">
+            <objects>
+                <viewController storyboardIdentifier="ChildViewController" id="Vb7-NN-p1C" customClass="ChildViewController" customModule="FileManagerApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="LVL-p3-Dj1">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="lfH-2L-1tG">
+                                <rect key="frame" x="14" y="44" width="386" height="769"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ONy-Vm-OHe">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ChildCell" id="1kI-AG-N22">
+                                        <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="7au-HB-fKD">
+                                            <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </collectionViewCellContentView>
+                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="9ta-vW-mX3"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="9ta-vW-mX3" firstAttribute="trailing" secondItem="lfH-2L-1tG" secondAttribute="trailing" constant="14" id="ARP-vr-eSg"/>
+                            <constraint firstItem="lfH-2L-1tG" firstAttribute="leading" secondItem="9ta-vW-mX3" secondAttribute="leading" constant="14" id="CEl-ya-bi0"/>
+                            <constraint firstItem="9ta-vW-mX3" firstAttribute="bottom" secondItem="lfH-2L-1tG" secondAttribute="bottom" id="LLF-T9-7H9"/>
+                            <constraint firstItem="lfH-2L-1tG" firstAttribute="top" secondItem="9ta-vW-mX3" secondAttribute="top" id="hsn-dz-6oe"/>
+                        </constraints>
+                    </view>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" id="fRp-LH-HeE">
+                        <barButtonItem key="rightBarButtonItem" title="Item" image="list.dash" catalog="system" id="XB7-fu-yqf"/>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="collectionView" destination="lfH-2L-1tG" id="RKJ-m6-ReH"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kmz-T7-8MY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1871" y="125"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="MxB-HB-2Ud">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="lkY-hf-eOQ" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="fCC-Cm-BS5">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" backIndicatorImage="arrow.backward.circle" catalog="system" backIndicatorTransitionMaskImage="arrow.backward.circle" id="fCC-Cm-BS5">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -84,6 +148,9 @@
         </scene>
     </scenes>
     <resources>
+        <image name="arrow.backward.circle" catalog="system" width="128" height="121"/>
+        <image name="doc.badge.plus" catalog="system" width="119" height="128"/>
+        <image name="folder.badge.plus" catalog="system" width="128" height="91"/>
         <image name="list.dash" catalog="system" width="128" height="85"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
