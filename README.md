@@ -3,7 +3,7 @@
 An example of a simple application that implements Google Spreadsheet as a file manager.
 
 - Used by UICollectionView to display files and folders with preview text.
-- Implemented custom UICollectionViewFlowLayout to display data in 2 displays:
+- Implemented custom UICollectionViewFlowLayout to display the layout as:
   - Grid
   - List
 - Getting data from The Google Sheets API using the Alamofire Framework.
